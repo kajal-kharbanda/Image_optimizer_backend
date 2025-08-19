@@ -13,11 +13,20 @@ app.use(express.json());
 app.use('/uploads', cors(),express.static(path.join(__dirname, 'uploads')));
 app.use('/processed', cors(), express.static(path.join(__dirname, 'processed')));
 app.use('/compressed', cors(),express.static(path.join(__dirname, 'compressed')));
+const allowedOrigins = [
+  "http://localhost:5173", 
+  "https://resilient-gecko-d90af3.netlify.app"
+];
+
 app.use(cors({
-    origin: ["http://localhost:3000",
-      "http://localhost:5173",
-      "https://resilient-gecko-d90af3.netlify.app/"], // your frontend origin
-    credentials: true // if you're sending cookies or auth headers
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true
 }));
 mongoose.connect(process.env.MONGO_URL, {
   useNewUrlParser: true,

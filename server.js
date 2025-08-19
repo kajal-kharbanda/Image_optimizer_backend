@@ -14,7 +14,7 @@ app.use('/uploads', cors(),express.static(path.join(__dirname, 'uploads')));
 app.use('/processed', cors(), express.static(path.join(__dirname, 'processed')));
 app.use('/compressed', cors(),express.static(path.join(__dirname, 'compressed')));
 app.use(cors({
-    origin: 'http://localhost:5173', // your frontend origin
+    origin: ["http://localhost:3000","https://resilient-gecko-d90af3.netlify.app/"], // your frontend origin
     credentials: true // if you're sending cookies or auth headers
 }));
 mongoose.connect(process.env.MONGO_URL, {

@@ -5,6 +5,7 @@ const path = require('path');
 const routes = require('./routes');
 const cors=require('cors')
 const mongoose = require('mongoose');
+const connectDB = require('./config/connectDb');
 const Port=process.env.PORT || 3000 ;
 
 const app = express();
@@ -28,9 +29,10 @@ app.use(cors({
   },
   credentials: true
 }));
-mongoose.connect(process.env.MONGO_URL)
-.then(() => console.log('MongoDB connected'))
-.catch(err => console.error(err));
+// mongoose.connect(process.env.MONGO_URL)
+// .then(() => console.log('MongoDB connected'))
+// .catch(err => console.error(err));
+connectDB();
 
 app.use('/api', routes);
 

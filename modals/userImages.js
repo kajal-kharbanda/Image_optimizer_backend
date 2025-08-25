@@ -5,7 +5,7 @@ const UserImages = new mongoose.Schema({
    type: mongoose.Schema.Types.ObjectId,
     ref: "AuthUser"
   },
-  filename: String,
+  fileUrl: String,
   operation: String
 
 });

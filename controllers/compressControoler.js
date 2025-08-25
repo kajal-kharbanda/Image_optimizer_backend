@@ -1,36 +1,42 @@
-const sharp = require('sharp');
+const { v2: cloudinary } = require('cloudinary');
 const AuthUser = require('../modals/Signup');
-const UserImage = require('../modals/userImages')
+const UserImage = require('../modals/userImages');
+
+// Compress and upload to Cloudinary
 const compressImage = async (req, res) => {
-
-  const file = req.file;
-  const user_id = req.body.user_id;
-  console.info(user_id)
-  const outputPath = `compressed/compressed_${Date.now()}.jpg`;
-  console.log("Compress API working")
-  console.log(file);
-  const operate=`Compress quality is 25`;
   try {
-    await sharp(file.path)
-      .jpeg({ quality: 25 })
-      .toFile(outputPath);
+    const file = req.file;
+    const user_id = req.body.user_id;
+    console.log(file,user_id);
+    console.log("Compress API working with Cloudinary");
 
-    let login_user = await AuthUser.findById(user_id)
-    console.log(login_user)
-
-    if(login_user){
-      let user_image = new UserImage({ auth_id: login_user._id, filename: outputPath, operation:operate});
-      user_image.save()
-    }
-    res.json({
-      path: `${outputPath}`
+    // Upload to Cloudinary with compression
+    const result = await cloudinary.uploader.upload(file.path, {
+      folder: "compressed_images",
+      quality: "10",   // compress
+      format: "jpg"    // output format
     });
 
+    let login_user = await AuthUser.findById(user_id);
 
-    // res.download(outputPath);
+    if (login_user) {
+      let user_image = new UserImage({
+        auth_id: login_user._id,
+        fileUrl: result.secure_url,  //  Cloudinary URL
+        operation: "Compress quality is 10"
+      });
+      await user_image.save();
+    }
+
+    res.json({
+      path: result.secure_url   // return Cloudinary link
+    });
+
   } catch (err) {
-    console.log(err);
+    console.error(err);
+    console.log("API not working");
     res.status(500).json({ error: 'Compression failed' });
   }
 };
+
 module.exports = compressImage;
